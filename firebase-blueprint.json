@@ -1,0 +1,161 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile for student, faculty, HOD or administrator",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "role": { "type": "string", "enum": ["super_admin", "hod", "faculty", "student"] },
+        "departmentName": { "type": "string", "maxLength": 100 },
+        "registerNumber": { "type": "string", "maxLength": 50 },
+        "year": { "type": "string", "maxLength": 10 },
+        "section": { "type": "string", "maxLength": 10 },
+        "batch": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "email", "role", "status"]
+    },
+    "Department": {
+      "title": "Department",
+      "description": "Academic Department in Sasurie College of Engineering",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string", "maxLength": 20 },
+        "name": { "type": "string", "maxLength": 150 },
+        "hodName": { "type": "string", "maxLength": 100 },
+        "hodEmail": { "type": "string", "maxLength": 150 },
+        "totalStudents": { "type": "number" },
+        "totalFaculty": { "type": "number" }
+      },
+      "required": ["code", "name"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Scheduled online examination",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 200 },
+        "subjectCode": { "type": "string", "maxLength": 30 },
+        "subjectName": { "type": "string", "maxLength": 150 },
+        "departmentName": { "type": "string", "maxLength": 100 },
+        "year": { "type": "string", "maxLength": 10 },
+        "section": { "type": "string", "maxLength": 10 },
+        "examDate": { "type": "string", "maxLength": 20 },
+        "startTime": { "type": "string", "maxLength": 10 },
+        "durationMinutes": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "totalMarks": { "type": "number" },
+        "status": { "type": "string", "enum": ["draft", "scheduled", "active", "completed", "results_published"] }
+      },
+      "required": ["name", "subjectCode", "status"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "Question bank item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "subject": { "type": "string", "maxLength": 150 },
+        "unit": { "type": "number" },
+        "topic": { "type": "string", "maxLength": 150 },
+        "type": { "type": "string", "enum": ["mcq", "true_false", "short_answer", "descriptive"] },
+        "questionText": { "type": "string", "maxLength": 2000 },
+        "correctAnswer": { "type": "string", "maxLength": 500 },
+        "marks": { "type": "number" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] }
+      },
+      "required": ["subject", "questionText", "correctAnswer", "marks"]
+    },
+    "ExamResult": {
+      "title": "ExamResult",
+      "description": "Graded examination result and marksheet",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "examId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string", "maxLength": 100 },
+        "registerNumber": { "type": "string", "maxLength": 50 },
+        "marksObtained": { "type": "number" },
+        "totalMarks": { "type": "number" },
+        "percentage": { "type": "number" },
+        "passed": { "type": "boolean" },
+        "rank": { "type": "number" },
+        "published": { "type": "boolean" }
+      },
+      "required": ["examId", "studentId", "marksObtained", "percentage"]
+    },
+    "ProctoringEvent": {
+      "title": "ProctoringEvent",
+      "description": "Surveillance incident violation logged during test",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "examId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string" },
+        "registerNumber": { "type": "string" },
+        "violationType": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "warningNumber": { "type": "number" },
+        "severity": { "type": "string" },
+        "resolved": { "type": "boolean" }
+      },
+      "required": ["examId", "studentId", "violationType", "warningNumber"]
+    },
+    "GDTopic": {
+      "title": "GDTopic",
+      "description": "Group Discussion topic, placement case study, and latest news update",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "enum": ["Current Affairs", "AI & Tech Ethics", "Placement Hot Topics", "Business & Economy", "Social Issues"] },
+        "newsSummary": { "type": "string", "maxLength": 3000 },
+        "pointsFor": { "type": "string" },
+        "pointsAgainst": { "type": "string" },
+        "statistics": { "type": "string" },
+        "speakingTips": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "authorName": { "type": "string" }
+      },
+      "required": ["title", "category", "newsSummary"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "entities/User" },
+      "description": "User accounts and student directory"
+    },
+    "/departments/{deptId}": {
+      "schema": { "$ref": "entities/Department" },
+      "description": "Engineering departments"
+    },
+    "/exams/{examId}": {
+      "schema": { "$ref": "entities/Exam" },
+      "description": "Examinations and schedules"
+    },
+    "/questions/{questionId}": {
+      "schema": { "$ref": "entities/Question" },
+      "description": "Central question bank"
+    },
+    "/results/{resultId}": {
+      "schema": { "$ref": "entities/ExamResult" },
+      "description": "Evaluated scorecards"
+    },
+    "/proctoringEvents/{eventId}": {
+      "schema": { "$ref": "entities/ProctoringEvent" },
+      "description": "Audit log of proctoring violations"
+    },
+    "/gdTopics/{topicId}": {
+      "schema": { "$ref": "entities/GDTopic" },
+      "description": "Group discussion topics and corporate news"
+    }
+  }
+}

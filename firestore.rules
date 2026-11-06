@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'admin@sasurie.edu.in' ||
+        request.auth.token.email == 'dhananjeiyan.backup@gmail.com'
+      );
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isSignedIn() && isValidId(userId);
+      allow create, update: if isSignedIn() && isValidId(userId);
+      allow delete: if isAdmin() && isValidId(userId);
+    }
+
+    // Departments Collection
+    match /departments/{deptId} {
+      allow read: if isSignedIn() && isValidId(deptId);
+      allow write: if isSignedIn() && isValidId(deptId);
+    }
+
+    // Examinations Collection
+    match /exams/{examId} {
+      allow read: if isSignedIn() && isValidId(examId);
+      allow write: if isSignedIn() && isValidId(examId);
+    }
+
+    // Question Bank Collection
+    match /questions/{questionId} {
+      allow read: if isSignedIn() && isValidId(questionId);
+      allow write: if isSignedIn() && isValidId(questionId);
+    }
+
+    // Exam Results Collection
+    match /results/{resultId} {
+      allow read: if isSignedIn() && isValidId(resultId);
+      allow write: if isSignedIn() && isValidId(resultId);
+    }
+
+    // Proctoring Events Collection
+    match /proctoringEvents/{eventId} {
+      allow read: if isSignedIn() && isValidId(eventId);
+      allow create: if isSignedIn() && isValidId(eventId);
+      allow update, delete: if isSignedIn() && isValidId(eventId);
+    }
+
+    // Group Discussion & News Collection
+    match /gdTopics/{topicId} {
+      allow read: if isSignedIn() && isValidId(topicId);
+      allow write: if isSignedIn() && isValidId(topicId);
+    }
+  }
+}

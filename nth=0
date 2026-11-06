@@ -1,0 +1,9 @@
+### Ran Playwright code
+```js
+await page.locator('text=AI Communication Lab').click();
+```
+### Page
+- Page URL: http://localhost:3000/
+- Page Title: SASURIE EXAM & SKILL HUB - Sasurie College of Engineering
+### Snapshot
+- [Snapshot](.playwright-cli/page-2026-11-06T01-51-18-770Z.yml)
